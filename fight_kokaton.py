@@ -65,6 +65,7 @@ class Bird:
 
         self.rct = self.img.get_rect()
         self.rct.center = xy
+        self.dire = [+5, 0]
 
     def change_img(self, num: int, screen: pg.Surface):
         """
@@ -86,6 +87,8 @@ class Bird:
             if key_lst[k]:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
+                self.dire[0] = sum_mv[0]
+                self.dire[1] = sum_mv[1]
         self.rct.move_ip(sum_mv)
         for i in range(8):  #向きごとのこうかとんの表示
             if self.kk_mv_xy[i] == sum_mv:
@@ -129,12 +132,26 @@ class Bomb:
 class Beam:
     def __init__(self, bird: Bird):
         self.img = pg.image.load(f"ex03/fig/beam.png")
+        self.img_f = pg.transform.flip(self.img, True, False)
+        self.img_1 = pg.transform.rotozoom(self.img_f, 315, 1.0)
+        self.img_2 = pg.transform.rotozoom(self.img_f, 0, 1.0)
+        self.img_3 = pg.transform.rotozoom(self.img_f, 45, 1.0)
+        self.img_4 = pg.transform.rotozoom(self.img, 270, 1.0)
+        self.img_5 = pg.transform.rotozoom(self.img, 315, 1.0)
+        self.img_6 = pg.transform.rotozoom(self.img, 0, 1.0)
+        self.img_7 = pg.transform.rotozoom(self.img, 45, 1.0)
+        self.img_8 = pg.transform.rotozoom(self.img, 90, 1.0)
+        self.img_lst = [self.img_1, self.img_2, self.img_3, self.img_4, self.img_5, self.img_6, self.img_7, self.img_8]
+        self.mv_xy = [[-5, -5], [-5, 0], [-5, +5], [0, +5], [+5, +5], [+5, 0], [+5, -5], [0, -5]]
         self.rct = self.img.get_rect()
-        self.rct.left = bird.rct.right
-        self.rct.centery = bird.rct.centery
-        self.vx, self.vy = +5, 0
+        self.vx, self.vy = bird.dire[0], bird.dire[1]
+        self.rct.centerx = bird.rct.centerx + bird.rct.width * self.vx / 5
+        self.rct.centery = bird.rct.centery + bird.rct.height * self.vy / 5 
 
     def update(self, screen: pg.Surface):
+        for i in range(8): 
+            if [self.vx, self.vy] == self.mv_xy[i]:
+                self.img = self.img_lst[i]
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
