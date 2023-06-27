@@ -139,6 +139,16 @@ class Beam:
         screen.blit(self.img, self.rct)
 
 
+class Effect:
+    def __init__(self, bomb: Bomb):
+        self.img = pg.image.load(f"ex03/fig/explosion.gif")
+        self.rct = self.img.get_rect()
+        self.rct.center = bomb.rct.center
+
+    def update(self, screen: pg.surface):
+        screen.blit(self.img, self.rct)
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -146,6 +156,7 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     beam = None
+    effect = None
 
     clock = pg.time.Clock()
     tmr = 0
@@ -170,6 +181,7 @@ def main():
         for i, bomb in enumerate(bombs):
             if beam is not None:
                 if beam.rct.colliderect(bomb.rct):
+                    effect = Effect(bombs[i])
                     beam = None
                     bombs[i] = None
                     bird.change_img(6, screen)
@@ -183,6 +195,9 @@ def main():
 
         if beam is not None:
             beam.update(screen)
+
+        if effect is not None:
+            effect.update(screen)
 
         pg.display.update()
         tmr += 1
