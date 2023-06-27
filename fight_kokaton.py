@@ -177,7 +177,6 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     beam = None
-    effect = None
 
     clock = pg.time.Clock()
     tmr = 0
@@ -200,15 +199,18 @@ def main():
                 return
         
         for i, bomb in enumerate(bombs):
+            effects = [Effect(bombs[i]) for _ in range(NUM_OF_BOMBS)]
             if beam is not None:
                 if beam.rct.colliderect(bomb.rct):
-                    effect = Effect(bombs[i])
-                    if effect.life == 0:
-                        effect = None
+                    if effects[i].life == 0:
+                        effects[i] = None
                     beam = None
                     bombs[i] = None
                     bird.change_img(6, screen)
                     pg.display.update()
+                    effects = [effect for effect in effects if effect is not None]
+                    for effect in effects:
+                        effect.update(screen)
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
@@ -218,9 +220,6 @@ def main():
 
         if beam is not None:
             beam.update(screen)
-
-        if effect is not None:
-            effect.update(screen)
 
         pg.display.update()
         tmr += 1
