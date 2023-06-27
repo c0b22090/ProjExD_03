@@ -142,11 +142,15 @@ class Beam:
 class Effect:
     def __init__(self, bomb: Bomb):
         self.img = pg.image.load(f"ex03/fig/explosion.gif")
+        self.img_f = pg.transform.flip(self.img, True, True)
         self.rct = self.img.get_rect()
         self.rct.center = bomb.rct.center
+        self.img_lst = [self.img, self.img_f]
+        self.life = 10
 
     def update(self, screen: pg.surface):
-        screen.blit(self.img, self.rct)
+        screen.blit(self.img_lst[self.life%2], self.rct)
+        self.life -= 1
 
 
 def main():
@@ -182,6 +186,8 @@ def main():
             if beam is not None:
                 if beam.rct.colliderect(bomb.rct):
                     effect = Effect(bombs[i])
+                    if effect.life == 0:
+                        effect = None
                     beam = None
                     bombs[i] = None
                     bird.change_img(6, screen)
