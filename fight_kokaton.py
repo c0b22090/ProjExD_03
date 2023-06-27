@@ -141,15 +141,19 @@ class Beam:
         self.img_6 = pg.transform.rotozoom(self.img, 0, 1.0)
         self.img_7 = pg.transform.rotozoom(self.img, 45, 1.0)
         self.img_8 = pg.transform.rotozoom(self.img, 90, 1.0)
+        """
+        ビームのそれぞれの向きの画像を格納したリスト
+        こうかとんの移動方向を格納したリスト
+        """
         self.img_lst = [self.img_1, self.img_2, self.img_3, self.img_4, self.img_5, self.img_6, self.img_7, self.img_8]
         self.mv_xy = [[-5, -5], [-5, 0], [-5, +5], [0, +5], [+5, +5], [+5, 0], [+5, -5], [0, -5]]
         self.rct = self.img.get_rect()
         self.vx, self.vy = bird.dire[0], bird.dire[1]
         self.rct.centerx = bird.rct.centerx + bird.rct.width * self.vx / 5
-        self.rct.centery = bird.rct.centery + bird.rct.height * self.vy / 5 
+        self.rct.centery = bird.rct.centery + bird.rct.height * self.vy / 5
 
     def update(self, screen: pg.Surface):
-        for i in range(8): 
+        for i in range(8):  #こうかとんの向きに応じた画像の設定
             if [self.vx, self.vy] == self.mv_xy[i]:
                 self.img = self.img_lst[i]
         self.rct.move_ip(self.vx, self.vy)
@@ -162,7 +166,7 @@ class Effect:
         self.img_f = pg.transform.flip(self.img, True, True)
         self.rct = self.img.get_rect()
         self.rct.center = bomb.rct.center
-        self.img_lst = [self.img, self.img_f]
+        self.img_lst = [self.img, self.img_f] #切り替わるエフェクトのリスト
         self.life = 10
 
     def update(self, screen: pg.surface):
@@ -186,7 +190,7 @@ def main():
                 return
             
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beam = Beam(bird)
+                beam = Beam(bird) #スペースキーを押すとビームが表示
         
         screen.blit(bg_img, [0, 0])
         
@@ -201,7 +205,7 @@ def main():
         for i, bomb in enumerate(bombs):
             effects = [Effect(bombs[i]) for _ in range(NUM_OF_BOMBS)]
             if beam is not None:
-                if beam.rct.colliderect(bomb.rct):
+                if beam.rct.colliderect(bomb.rct): #爆弾にビームが当たったとき
                     if effects[i].life == 0:
                         effects[i] = None
                     beam = None
@@ -209,7 +213,7 @@ def main():
                     bird.change_img(6, screen)
                     pg.display.update()
                     effects = [effect for effect in effects if effect is not None]
-                    for effect in effects:
+                    for effect in effects: #エフェクトの表示
                         effect.update(screen)
 
         key_lst = pg.key.get_pressed()
