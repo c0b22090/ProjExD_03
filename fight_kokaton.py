@@ -48,6 +48,20 @@ class Bird:
             True, 
             False
         )
+        kk_img = pg.image.load("ex02/fig/3.png")
+        kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+        kk_img_f = pg.transform.flip(kk_img, True, False)
+        kk_img_1 = pg.transform.rotozoom(kk_img, 315, 1.0)
+        kk_img_2 = pg.transform.rotozoom(kk_img, 0, 1.0)
+        kk_img_3 = pg.transform.rotozoom(kk_img, 45, 1.0)
+        kk_img_4 = pg.transform.rotozoom(kk_img_f, 270, 1.0)
+        kk_img_5 = pg.transform.rotozoom(kk_img_f, 315, 1.0)
+        kk_img_6 = pg.transform.rotozoom(kk_img_f, 0, 1.0)
+        kk_img_7 = pg.transform.rotozoom(kk_img_f, 45, 1.0)
+        kk_img_8 = pg.transform.rotozoom(kk_img_f, 90, 1.0)
+        self.kk_img_lst = [kk_img_1, kk_img_2, kk_img_3, kk_img_4, kk_img_5, kk_img_6, kk_img_7, kk_img_8]
+        self.kk_mv_xy = [[-5, -5], [-5, 0], [-5, +5], [0, +5], [+5, +5], [+5, 0], [+5, -5], [0, -5]]
+
         self.rct = self.img.get_rect()
         self.rct.center = xy
 
@@ -72,6 +86,9 @@ class Bird:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
         self.rct.move_ip(sum_mv)
+        for i in range(8):  #向きごとのこうかとんの表示
+            if self.kk_mv_xy[i] == sum_mv:
+                self.img = self.kk_img_lst[i]
         if check_bound(self.rct) != (True, True):
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(self.img, self.rct)
