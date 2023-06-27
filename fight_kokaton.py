@@ -108,12 +108,26 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+class Beam:
+    def __init__(self, bird: Bird):
+        self.img = pg.image.load(f"ex03/fig/beam.png")
+        self.rct = self.img.get_rect()
+        self.rct.left = bird.rct.right
+        self.rct.centery = bird.rct.centery
+        self.vx, self.vy = +5, 0
+
+    def update(self, screen: pg.Surface):
+        self.rct.move_ip(self.vx, self.vy)
+        screen.blit(self.img, self.rct)
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     bomb = Bomb((255, 0, 0), 10)
+    beam = Beam(bird)
 
     clock = pg.time.Clock()
     tmr = 0
@@ -121,6 +135,9 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
+            
+            if event.type == pg.KEYDOWN & pg.K_SPACE:
+                beam.update(screen)
         
         screen.blit(bg_img, [0, 0])
         
@@ -130,10 +147,18 @@ def main():
             pg.display.update()
             time.sleep(1)
             return
+        
+        if beam is not None or bomb is not None:
+            if beam.rct.colliderect(bomb.rct):
+                beam = None
+                bomb = None
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        bomb.update(screen)
+
+        if bomb is not None:
+            bomb.update(screen)
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
